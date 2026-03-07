@@ -4,6 +4,7 @@ import dto.pet.PetInfo;
 import io.restassured.response.ValidatableResponse;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import services.PetApi;
@@ -31,10 +32,10 @@ public class PetTest {
 
   @Test
   @DisplayName("Ошибка при запросе с невалидным статусом")
-  //Проверка получения ошибки при запросе с невалидным статусом
+  //Проверка успешного запроса с невалидным статусо
   void invalidStatus() {
     PetApi petApi = new PetApi();
-    List<String> statuses = Arrays.asList("ok", "pending", "sold");
+    List<String> statuses = Arrays.asList("ok", "waiting", "absent");
     ValidatableResponse response = petApi.getPetList(statuses);
 
     List<PetInfo> pets = response.extract().as(new io.restassured.common.mapper.TypeRef<List<PetInfo>>() {
@@ -43,14 +44,14 @@ public class PetTest {
     Assertions.assertAll(
         () -> response.statusCode(HttpStatus.SC_OK),
         () -> response.body(matchesJsonSchemaInClasspath("schema/FindPetByStatusSchema.json")),
-        () -> Assertions.assertFalse(this.isStatusCorrect(pets, statuses))
+        () -> Assertions.assertTrue(pets.isEmpty())
     );
   }
 
   private boolean isStatusCorrect(List<PetInfo> petInfo, List<String> statuses) {
     for (PetInfo pet : petInfo) {
-      if (statuses.contains(pet.getStatus())) return true;
+      if (!statuses.contains(pet.getStatus())) return false;
     }
-    return false;
+    return true;
   }
 }
