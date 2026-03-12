@@ -4,14 +4,13 @@ import dto.pet.PetInfo;
 import io.restassured.response.ValidatableResponse;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import services.PetApi;
 import java.util.Arrays;
 import java.util.List;
 
-public class PetTest {
+public class PetPositiveTest {
   @Test
   @DisplayName("Список животных с выбранным статусом")
   //Проверка, что в ответе присутствуют животные с выбранными статусами
@@ -31,8 +30,8 @@ public class PetTest {
   }
 
   @Test
-  @DisplayName("Ошибка при запросе с невалидным статусом")
-  //Проверка успешного запроса с невалидным статусо
+  @DisplayName("Успешный запрос с невалидным статусом")
+  //Проверка успешного запроса с невалидным статусом
   void invalidStatus() {
     PetApi petApi = new PetApi();
     List<String> statuses = Arrays.asList("ok", "waiting", "absent");

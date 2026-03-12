@@ -9,15 +9,15 @@ import io.restassured.specification.RequestSpecification;
 
 
 public class UserApi {
-  private static final String BASE_URL = "https://petstore.swagger.io";
-  public static final String BASE_PATH = "/v2/user";
+  private final String baseUrl = System.getProperty("base.url");
+  public final String basePath = "/v2/user";
   private RequestSpecification specification;
 
   public UserApi() {
     specification =
         given()
-            .baseUri(BASE_URL)
-            .basePath(BASE_PATH)
+            .baseUri(baseUrl)
+            .basePath(basePath)
             .accept(ContentType.JSON)
             .log().all();
   }
@@ -31,4 +31,22 @@ public class UserApi {
         .then()
         .log().all();
   }
+
+  public ValidatableResponse getUserByName(String userName) {
+    return given(specification)
+        .when()
+        .get("/" + userName)
+        .then()
+        .log().all();
+  }
+
+  public ValidatableResponse deleteUserByName(String userName) {
+    return given(specification)
+        .when()
+        .delete("/" + userName)
+        .then()
+        .log().all();
+  }
+
+
 }

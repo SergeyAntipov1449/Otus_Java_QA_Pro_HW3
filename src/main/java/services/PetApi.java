@@ -9,16 +9,16 @@ import java.util.List;
 
 
 public class PetApi {
-  private static final String BASE_URL = "https://petstore.swagger.io";
-  public static final String BASE_PATH = "/v2/pet";
-  public static final String FIND_BY_STATUS = "/findByStatus";
+  private final String baseUrl = System.getProperty("base.url");
+  public final String basePath = "/v2/pet";
+  public final String findByStatus = "/findByStatus";
   private RequestSpecification specification;
 
   public PetApi() {
     specification =
         given()
-            .baseUri(BASE_URL)
-            .basePath(BASE_PATH)
+            .baseUri(baseUrl)
+            .basePath(basePath)
             .accept(ContentType.JSON)
             .log().all();
   }
@@ -27,7 +27,7 @@ public class PetApi {
     return given(specification)
         .queryParam("status", petStatus)
         .when()
-        .get(FIND_BY_STATUS)
+        .get(findByStatus)
         .then()
         .log().all();
   }

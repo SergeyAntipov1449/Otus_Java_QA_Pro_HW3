@@ -51,6 +51,12 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.5</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <base.url>https://petstore.swagger.io</base.url>
+                    </systemPropertyVariables>
+                </configuration>
+
             </plugin>
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
