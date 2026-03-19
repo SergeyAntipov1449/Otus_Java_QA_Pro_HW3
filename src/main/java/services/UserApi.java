@@ -5,25 +5,17 @@ import static io.restassured.RestAssured.*;
 import dto.user.IUserDTO;
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
-import io.restassured.specification.RequestSpecification;
 
 
-public class UserApi {
-  private final String baseUrl = System.getProperty("base.url");
+public class UserApi extends AbsApi {
   public final String basePath = "/v2/user";
-  private RequestSpecification specification;
 
   public UserApi() {
-    specification =
-        given()
-            .baseUri(baseUrl)
-            .basePath(basePath)
-            .accept(ContentType.JSON)
-            .log().all();
   }
 
   public ValidatableResponse createUser(IUserDTO userDTO) {
-    return given(specification)
+    return given(super.specification)
+        .basePath(basePath)
         .contentType(ContentType.JSON)
         .body(userDTO)
         .when()
