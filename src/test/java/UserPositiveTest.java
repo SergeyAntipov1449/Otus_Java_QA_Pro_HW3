@@ -1,21 +1,26 @@
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
+import com.google.inject.Inject;
 import dto.user.CreateUserResponseDTO;
 import dto.user.UserDTO;
+import extensions.ApiExtensions;
 import io.restassured.response.ValidatableResponse;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import services.UserApi;
 
 
+@ExtendWith(ApiExtensions.class)
 public class UserPositiveTest {
+  @Inject
+  private UserApi userApi;
   @Test
   @DisplayName("Успешное создание пользователя")
   //Проверка успешного создания пользователя. Запрос c валидными данным для всех полей.
   void createUser() {
-    UserApi userApi = new UserApi();
     UserDTO allFieldsUserDTO = UserDTO.builder()
         .id(1313L)
         .userName("SergeyAnt")

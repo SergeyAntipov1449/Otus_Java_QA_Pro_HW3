@@ -1,22 +1,27 @@
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
+import com.google.inject.Inject;
 import dto.user.CreateUserResponseDTO;
 import dto.user.WrongIdTypeUserDTO;
+import extensions.ApiExtensions;
 import io.restassured.response.ValidatableResponse;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import services.UserApi;
 
 
 
+@ExtendWith(ApiExtensions.class)
 public class UserNegativeTest {
+  @Inject
+  private UserApi userApi;
   @Test
   @DisplayName("Ошибка при создании пользователя с невалидным id")
   //Проверка получания ошибки при создании пользователя с невалидным id. String вместо long.
   void failCreateUser() {
-    UserApi userApi = new UserApi();
     WrongIdTypeUserDTO wrongIdTypeUserDTO = WrongIdTypeUserDTO.builder()
         .id("one")
         .userName("SergeyAnt")
