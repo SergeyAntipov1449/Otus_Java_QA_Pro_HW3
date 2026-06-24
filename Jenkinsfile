@@ -20,25 +20,28 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh "docker build -t ${REGISTRY}/api-tests:${BUILD_NUMBER} ."
+                sh "docker build -t ${REGISTRY}/api-tests:latest ."
             }
         }
 
         stage('Push to Registry') {
             steps {
-                sh "docker push ${REGISTRY}/api-tests:${BUILD_NUMBER}"
+                sh """
+                    echo "admin" | docker login localhost:5000 --username admin --password-stdin > /dev/null 2>&1
+                    docker push ${REGISTRY}/api-tests:latest
+                """
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh "docker run --rm ${REGISTRY}/api-tests:${BUILD_NUMBER} --base_url ${params.BASE_URL}"
+                sh "docker run --rm ${REGISTRY}/api-tests:latest --base_url ${params.BASE_URL}"
             }
         }
 
         stage('Cleanup') {
             steps {
-                sh "docker rmi ${REGISTRY}/api-tests:${BUILD_NUMBER} || true"
+                sh "docker rmi ${REGISTRY}/api-tests:latest || true"
             }
         }
     }
