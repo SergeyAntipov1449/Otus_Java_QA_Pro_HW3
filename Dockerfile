@@ -3,4 +3,5 @@ USER root
 RUN mkdir -p /root/api_test
 WORKDIR /root/api_test
 COPY . /root/api_test
-ENTRYPOINT ["entrypoint.sh"]
+RUN chmod +x entrypoint.sh
+ENTRYPOINT ["./entrypoint.sh"]
