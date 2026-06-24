@@ -26,10 +26,7 @@ pipeline {
 
         stage('Push to Registry') {
             steps {
-                sh """
-                    echo "admin" | docker login localhost:5000 --username admin --password-stdin > /dev/null 2>&1
-                    docker push ${REGISTRY}/api-tests:latest
-                """
+                sh "docker push ${REGISTRY}/api-tests:latest"
             }
         }
 
