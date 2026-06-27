@@ -50,7 +50,19 @@
             <artifactId>guice</artifactId>
             <version>7.0.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-junit5</artifactId>
+            <version>2.29.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-rest-assured</artifactId>
+            <version>2.29.1</version>
+        </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -60,6 +72,7 @@
                 <configuration>
                     <systemPropertyVariables>
                         <base.url>https://petstore.swagger.io</base.url>
+                        <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
                     </systemPropertyVariables>
                 </configuration>
 
@@ -99,6 +112,13 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>2.14.0</version>
+            </plugin>
+
         </plugins>
     </build>
 
