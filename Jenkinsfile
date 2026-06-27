@@ -32,7 +32,24 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                sh "docker run --rm ${REGISTRY}/api-tests:latest --base_url ${params.BASE_URL}"
+                sh """
+                    docker run --name api-tests-${BUILD_NUMBER} ${REGISTRY}/api-tests:latest --base_url ${params.BASE_URL} || true
+                    docker cp api-tests-${BUILD_NUMBER}:/app/target/allure-results ./allure-results
+                    docker rm api-tests-${BUILD_NUMBER}
+                """
+            }
+        }
+
+        stage('Allure Report') {
+            steps {
+                script {
+                    allure([
+                        includeProperties: false,
+                        jdk: '',
+                        reportBuildPolicy: 'ALWAYS',
+                        results: [[path: 'allure-results']]
+                    ])
+                }
             }
         }
 
