@@ -3,13 +3,20 @@ pipeline {
 
     environment {
         REGISTRY = 'localhost:5000'
+        IMAGE = "${REGISTRY}/${env.JOB_NAME}:latest"
+        CONTAINER = "${env.JOB_NAME}-${env.BUILD_NUMBER}"
     }
 
     parameters {
         string(
             name: 'BASE_URL',
-            defaultValue: 'https://petstore.swagger.io',
-            description: 'Базовый URL для API-тестов'
+            defaultValue: 'https://otus.ru',
+            description: 'Базовый URL для тестов'
+        )
+        choice(
+            name: 'BROWSER',
+            choices: ['chrome', 'firefox'],
+            description: 'Браузер для запуска тестов'
         )
     }
 
@@ -20,46 +27,45 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh "docker build -t ${REGISTRY}/api-tests:latest ."
+                sh "docker build -t ${IMAGE} ."
             }
         }
 
         stage('Push to Registry') {
             steps {
-                sh "docker push ${REGISTRY}/api-tests:latest"
+                sh "docker push ${IMAGE}"
             }
         }
 
         stage('Run Tests') {
             steps {
                 catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                    sh "docker run --name api-tests-${BUILD_NUMBER} ${REGISTRY}/api-tests:latest --base_url ${params.BASE_URL}"
+                    sh "docker run --name ${CONTAINER} --shm-size=2g ${IMAGE} --base_url ${params.BASE_URL} --browser ${params.BROWSER}"
                 }
                 sh """
-                    docker cp api-tests-${BUILD_NUMBER}:/app/target/allure-results ./allure-results
-                    docker rm api-tests-${BUILD_NUMBER}
+                    mkdir -p ./allure-results
+                    docker cp ${CONTAINER}:/app/target/allure-results/. ./allure-results/ || echo "WARNING: No allure results found"
+                    docker rm ${CONTAINER}
                 """
             }
         }
 
         stage('Allure Report') {
             steps {
-                script {
-                    allure([
-                        includeProperties: false,
-                        jdk: '',
-                        reportBuildPolicy: 'ALWAYS',
-                        results: [[path: 'allure-results']]
-                    ])
-                }
+                allure([
+                    includeProperties: false,
+                    jdk: '',
+                    reportBuildPolicy: 'ALWAYS',
+                    results: [[path: 'allure-results']]
+                ])
             }
         }
     }
 
     post {
         always {
-            sh "docker rm -f api-tests-${BUILD_NUMBER} || true"
-            sh "docker rmi -f ${REGISTRY}/api-tests:latest || true"
+            sh "docker rm -f ${CONTAINER} || true"
+            sh "docker rmi -f ${IMAGE} || true"
         }
     }
 }
