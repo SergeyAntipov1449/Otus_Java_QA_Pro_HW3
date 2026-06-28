@@ -33,12 +33,12 @@ pipeline {
         stage('Run Tests') {
             steps {
                 catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                    sh """
-                        docker run --name api-tests-${BUILD_NUMBER} ${REGISTRY}/api-tests:latest --base_url ${params.BASE_URL}
-                        docker cp api-tests-${BUILD_NUMBER}:/app/target/allure-results ./allure-results
-                        docker rm api-tests-${BUILD_NUMBER}
-                    """
+                    sh "docker run --name api-tests-${BUILD_NUMBER} ${REGISTRY}/api-tests:latest --base_url ${params.BASE_URL}"
                 }
+                sh """
+                    docker cp api-tests-${BUILD_NUMBER}:/app/target/allure-results ./allure-results
+                    docker rm api-tests-${BUILD_NUMBER}
+                """
             }
         }
 
