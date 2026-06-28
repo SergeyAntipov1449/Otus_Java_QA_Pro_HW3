@@ -7,14 +7,6 @@ pipeline {
         CONTAINER = "${env.JOB_NAME}-${env.BUILD_NUMBER}"
     }
 
-    parameters {
-        string(
-            name: 'BASE_URL',
-            defaultValue: 'https://petstore.swagger.io',
-            description: 'Базовый URL для тестов'
-        )
-    }
-
     stages {
         stage('Checkout') {
             steps { checkout scm }
