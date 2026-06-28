@@ -10,13 +10,8 @@ pipeline {
     parameters {
         string(
             name: 'BASE_URL',
-            defaultValue: 'https://otus.ru',
+            defaultValue: 'https://petstore.swagger.io',
             description: 'Базовый URL для тестов'
-        )
-        choice(
-            name: 'BROWSER',
-            choices: ['chrome', 'firefox'],
-            description: 'Браузер для запуска тестов'
         )
     }
 
@@ -40,7 +35,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                    sh "docker run --name ${CONTAINER} --shm-size=2g ${IMAGE} --base_url ${params.BASE_URL} --browser ${params.BROWSER}"
+                    sh "docker run --name ${CONTAINER} ${IMAGE} --base_url ${params.BASE_URL}"
                 }
                 sh """
                     mkdir -p ./allure-results
