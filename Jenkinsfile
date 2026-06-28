@@ -32,11 +32,13 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                sh """
-                    docker run --name api-tests-${BUILD_NUMBER} ${REGISTRY}/api-tests:latest --base_url ${params.BASE_URL} || true
-                    docker cp api-tests-${BUILD_NUMBER}:/app/target/allure-results ./allure-results
-                    docker rm api-tests-${BUILD_NUMBER}
-                """
+                catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                    sh """
+                        docker run --name api-tests-${BUILD_NUMBER} ${REGISTRY}/api-tests:latest --base_url ${params.BASE_URL}
+                        docker cp api-tests-${BUILD_NUMBER}:/app/target/allure-results ./allure-results
+                        docker rm api-tests-${BUILD_NUMBER}
+                    """
+                }
             }
         }
 
@@ -56,7 +58,8 @@ pipeline {
 
     post {
         always {
-            sh "docker rmi ${REGISTRY}/api-tests:latest || true"
+            sh "docker rm -f api-tests-${BUILD_NUMBER} || true"
+            sh "docker rmi -f ${REGISTRY}/api-tests:latest || true"
         }
     }
 }
